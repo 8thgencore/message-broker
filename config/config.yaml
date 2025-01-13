@@ -1,0 +1,11 @@
+server:
+  grpc_port: 9090
+  http_port: 8080
+
+queues:
+  - name: "app_events"
+    size: 1000
+    max_subscribers: 100
+  - name: "notifications"
+    size: 500
+    max_subscribers: 50 
