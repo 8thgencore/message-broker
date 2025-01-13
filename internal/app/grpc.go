@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/8thgencore/message-broker/internal/broker"
-	pb "github.com/8thgencore/message-broker/pkg/broker/v1"
+	pb "github.com/8thgencore/message-broker/pkg/pb/broker/v1"
 )
 
 type grpcServer struct {

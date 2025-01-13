@@ -3,9 +3,8 @@ syntax = "proto3";
 package broker.v1;
 
 import "google/api/annotations.proto";
-import "protoc-gen-openapiv2/options/annotations.proto";
 
-option go_package = "github.com/yourusername/message-broker/pkg/broker/v1;brokerv1";
+option go_package = "github.com/8thgencore/message-broker/pkg/pb/broker/v1;brokerv1";
 
 service BrokerService {
   // PublishMessage публикует сообщение в указанную очередь
@@ -40,4 +39,4 @@ message SubscribeRequest {
 message Message {
   string id = 1;
   bytes data = 2;
-} 
+}

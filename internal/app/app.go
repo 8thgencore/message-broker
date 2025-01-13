@@ -16,7 +16,7 @@ import (
 
 	"github.com/8thgencore/message-broker/internal/broker"
 	"github.com/8thgencore/message-broker/internal/config"
-	pb "github.com/8thgencore/message-broker/pkg/broker/v1"
+	pb "github.com/8thgencore/message-broker/pkg/pb/broker/v1"
 )
 
 type App struct {
