@@ -5,32 +5,28 @@ import (
 	"errors"
 	"sync"
 
+	"github.com/8thgencore/message-broker/internal/model"
 	"github.com/google/uuid"
 )
 
 var (
-	ErrQueueFull        = errors.New("queue is full")
+	ErrQueueFull          = errors.New("queue is full")
 	ErrTooManySubscribers = errors.New("too many subscribers")
 )
 
-type Message struct {
-	ID   string
-	Data []byte
-}
-
 type subscriber struct {
-	id     string
-	msgCh  chan Message
-	done   chan struct{}
+	id    string
+	msgCh chan model.Message
+	done  chan struct{}
 }
 
 type Queue struct {
 	name           string
 	size           int
 	maxSubscribers int
-	messages       []Message
+	messages       []model.Message
 	subscribers    map[string]*subscriber
-	mu            sync.RWMutex
+	mu             sync.RWMutex
 }
 
 func NewQueue(name string, size, maxSubscribers int) *Queue {
@@ -38,7 +34,7 @@ func NewQueue(name string, size, maxSubscribers int) *Queue {
 		name:           name,
 		size:           size,
 		maxSubscribers: maxSubscribers,
-		messages:       make([]Message, 0, size),
+		messages:       make([]model.Message, 0, size),
 		subscribers:    make(map[string]*subscriber),
 	}
 }
@@ -51,14 +47,13 @@ func (q *Queue) Publish(ctx context.Context, data []byte) (string, error) {
 		return "", ErrQueueFull
 	}
 
-	msg := Message{
+	msg := model.Message{
 		ID:   uuid.New().String(),
 		Data: data,
 	}
 
 	q.messages = append(q.messages, msg)
 
-	// Отправляем сообщение всем подписчикам
 	for _, sub := range q.subscribers {
 		select {
 		case sub.msgCh <- msg:
@@ -70,7 +65,7 @@ func (q *Queue) Publish(ctx context.Context, data []byte) (string, error) {
 	return msg.ID, nil
 }
 
-func (q *Queue) Subscribe(ctx context.Context) (string, <-chan Message, <-chan struct{}, error) {
+func (q *Queue) Subscribe(ctx context.Context) (string, <-chan model.Message, <-chan struct{}, error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 
@@ -79,7 +74,7 @@ func (q *Queue) Subscribe(ctx context.Context) (string, <-chan Message, <-chan s
 	}
 
 	id := uuid.New().String()
-	msgCh := make(chan Message, q.size)
+	msgCh := make(chan model.Message, q.size)
 	done := make(chan struct{})
 
 	sub := &subscriber{
@@ -90,7 +85,6 @@ func (q *Queue) Subscribe(ctx context.Context) (string, <-chan Message, <-chan s
 
 	q.subscribers[id] = sub
 
-	// Отправляем все существующие сообщения новому подписчику
 	for _, msg := range q.messages {
 		select {
 		case msgCh <- msg:
@@ -114,4 +108,4 @@ func (q *Queue) Unsubscribe(id string) {
 		close(sub.done)
 		delete(q.subscribers, id)
 	}
-} 
+}

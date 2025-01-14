@@ -8,7 +8,7 @@ import (
 )
 
 type Config struct {
-	Server ServerConfig `yaml:"server"`
+	Server ServerConfig  `yaml:"server"`
 	Queues []QueueConfig `yaml:"queues"`
 }
 
@@ -35,4 +35,12 @@ func Load(path string) (*Config, error) {
 	}
 
 	return &cfg, nil
-} 
+}
+
+func (c *Config) GRPCAddress() string {
+	return fmt.Sprintf(":%d", c.Server.GRPCPort)
+}
+
+func (c *Config) HTTPAddress() string {
+	return fmt.Sprintf(":%d", c.Server.HTTPPort)
+}
