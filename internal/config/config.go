@@ -43,10 +43,10 @@ func Load(path string) (*Config, error) {
 
 // GRPCAddress returns the address for the GRPC server.
 func (c *Config) GRPCAddress() string {
-	return fmt.Sprintf(":%d", c.Server.GRPCPort)
+	return fmt.Sprintf("0.0.0.0:%d", c.Server.GRPCPort)
 }
 
 // HTTPAddress returns the address for the HTTP server.
 func (c *Config) HTTPAddress() string {
-	return fmt.Sprintf(":%d", c.Server.HTTPPort)
+	return fmt.Sprintf("0.0.0.0:%d", c.Server.HTTPPort)
 }

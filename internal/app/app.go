@@ -39,14 +39,14 @@ func (a *App) Run() error {
 	go func() {
 		defer wg.Done()
 		if err := a.runGRPCServer(); err != nil {
-			a.logger.Error("failed to run gRPC server", "error", err)
+			a.logger.Error("[grpc-server] Failed to run", "error", err)
 		}
 	}()
 
 	go func() {
 		defer wg.Done()
 		if err := a.runHTTPServer(); err != nil {
-			a.logger.Error("failed to run HTTP server", "error", err)
+			a.logger.Error("[http-server] Failed to run", "error", err)
 		}
 	}()
 
@@ -57,7 +57,7 @@ func (a *App) Run() error {
 
 // runGRPCServer starts the gRPC server.
 func (a *App) runGRPCServer() error {
-	a.logger.Info("starting grpc server", "port", a.cfg.Server.GRPCPort)
+	a.logger.Info("[grpc-server] Starting...", "port", a.cfg.Server.GRPCPort)
 
 	lis, err := net.Listen("tcp", a.serviceProvider.Config.GRPCAddress())
 	if err != nil {
@@ -69,7 +69,7 @@ func (a *App) runGRPCServer() error {
 
 // runHTTPServer starts the HTTP server.
 func (a *App) runHTTPServer() error {
-	a.logger.Info("starting http server", "port", a.cfg.Server.HTTPPort)
+	a.logger.Info("[http-server] Starting...", "port", a.cfg.Server.HTTPPort)
 
 	return a.httpServer.ListenAndServe()
 }
