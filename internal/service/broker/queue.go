@@ -9,17 +9,20 @@ import (
 	"github.com/google/uuid"
 )
 
-var (
-	ErrQueueFull          = errors.New("queue is full")
-	ErrTooManySubscribers = errors.New("too many subscribers")
-)
+// ErrQueueFull is the error returned when the queue is full.
+var ErrQueueFull = errors.New("queue is full")
 
+// ErrTooManySubscribers is the error returned when there are too many subscribers.
+var ErrTooManySubscribers = errors.New("too many subscribers")
+
+// subscriber is a subscriber to a queue.
 type subscriber struct {
 	id    string
 	msgCh chan model.Message
 	done  chan struct{}
 }
 
+// Queue is a queue of messages.
 type Queue struct {
 	name           string
 	size           int
@@ -29,6 +32,7 @@ type Queue struct {
 	mu             sync.RWMutex
 }
 
+// NewQueue creates a new Queue instance.
 func NewQueue(name string, size, maxSubscribers int) *Queue {
 	return &Queue{
 		name:           name,
@@ -39,6 +43,7 @@ func NewQueue(name string, size, maxSubscribers int) *Queue {
 	}
 }
 
+// Publish publishes a message to the queue.
 func (q *Queue) Publish(ctx context.Context, data []byte) (string, error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
@@ -65,6 +70,7 @@ func (q *Queue) Publish(ctx context.Context, data []byte) (string, error) {
 	return msg.ID, nil
 }
 
+// Subscribe subscribes to the queue and streams messages to the client.
 func (q *Queue) Subscribe(ctx context.Context) (string, <-chan model.Message, <-chan struct{}, error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
@@ -99,6 +105,7 @@ func (q *Queue) Subscribe(ctx context.Context) (string, <-chan model.Message, <-
 	return id, msgCh, done, nil
 }
 
+// Unsubscribe unsubscribes from the queue.
 func (q *Queue) Unsubscribe(id string) {
 	q.mu.Lock()
 	defer q.mu.Unlock()

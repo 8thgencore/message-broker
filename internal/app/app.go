@@ -13,6 +13,7 @@ import (
 	"github.com/8thgencore/message-broker/internal/config"
 )
 
+// App is the main application struct.
 type App struct {
 	cfg             *config.Config
 	logger          *slog.Logger
@@ -21,6 +22,7 @@ type App struct {
 	httpServer      *http.Server
 }
 
+// NewApp creates a new App instance.
 func NewApp(ctx context.Context) (*App, error) {
 	a := &App{}
 	if err := a.initDeps(ctx); err != nil {
@@ -29,6 +31,7 @@ func NewApp(ctx context.Context) (*App, error) {
 	return a, nil
 }
 
+// Run starts the application.
 func (a *App) Run() error {
 	wg := sync.WaitGroup{}
 	wg.Add(2) // gRPC и HTTP серверы
@@ -52,6 +55,7 @@ func (a *App) Run() error {
 	return nil
 }
 
+// runGRPCServer starts the gRPC server.
 func (a *App) runGRPCServer() error {
 	a.logger.Info("starting grpc server", "port", a.cfg.Server.GRPCPort)
 
@@ -63,6 +67,7 @@ func (a *App) runGRPCServer() error {
 	return a.grpcServer.Serve(lis)
 }
 
+// runHTTPServer starts the HTTP server.
 func (a *App) runHTTPServer() error {
 	a.logger.Info("starting http server", "port", a.cfg.Server.HTTPPort)
 

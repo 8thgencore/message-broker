@@ -5,10 +5,12 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/reflection"
 
 	"github.com/8thgencore/message-broker/internal/app/provider"
 	"github.com/8thgencore/message-broker/internal/config"
@@ -60,6 +62,8 @@ func (a *App) initServiceProvider(_ context.Context) error {
 func (a *App) initGRPCServer(_ context.Context) error {
 	a.grpcServer = grpc.NewServer()
 
+	reflection.Register(a.grpcServer)
+
 	pb.RegisterBrokerServiceServer(a.grpcServer, a.serviceProvider.BrokerDelivery())
 
 	return nil
@@ -79,8 +83,11 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 	}
 
 	a.httpServer = &http.Server{
-		Addr:    a.serviceProvider.Config.HTTPAddress(),
-		Handler: mux,
+		Addr:              a.serviceProvider.Config.HTTPAddress(),
+		Handler:           mux,
+		ReadTimeout:       10 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		ReadHeaderTimeout: 10 * time.Second,
 	}
 
 	return nil

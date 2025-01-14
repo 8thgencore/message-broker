@@ -9,7 +9,10 @@ import (
 	pb "github.com/8thgencore/message-broker/pkg/pb/broker/v1"
 )
 
-func (i *Implementation) PublishMessage(ctx context.Context, req *pb.PublishMessageRequest) (*pb.PublishMessageResponse, error) {
+// PublishMessage publishes a message to the given queue.
+func (i *Implementation) PublishMessage(
+	ctx context.Context, req *pb.PublishMessageRequest,
+) (*pb.PublishMessageResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request is nil")
 	}
@@ -36,6 +39,7 @@ func (i *Implementation) PublishMessage(ctx context.Context, req *pb.PublishMess
 	}, nil
 }
 
+// Subscribe subscribes to the given queue and streams messages to the client.
 func (i *Implementation) Subscribe(req *pb.SubscribeRequest, stream pb.BrokerService_SubscribeServer) error {
 	if req == nil {
 		return status.Error(codes.InvalidArgument, "request is nil")
@@ -46,7 +50,7 @@ func (i *Implementation) Subscribe(req *pb.SubscribeRequest, stream pb.BrokerSer
 	}
 
 	ctx := stream.Context()
-	subID, msgCh, done, err := i.brokerService.Subscribe(ctx, req.QueueName)
+	result, err := i.brokerService.Subscribe(ctx, req.QueueName)
 	if err != nil {
 		i.logger.Error("failed to subscribe",
 			"queue", req.QueueName,
@@ -54,24 +58,24 @@ func (i *Implementation) Subscribe(req *pb.SubscribeRequest, stream pb.BrokerSer
 		)
 		return status.Error(codes.Internal, err.Error())
 	}
-	defer i.brokerService.Unsubscribe(subID)
+	defer i.brokerService.Unsubscribe(result.ID)
 
 	for {
 		select {
-		case msg := <-msgCh:
+		case msg := <-result.Messages:
 			if err := stream.Send(&pb.Message{
 				Id:   msg.ID,
 				Data: msg.Data,
 			}); err != nil {
 				i.logger.Error("failed to send message",
 					"queue", req.QueueName,
-					"subscriber", subID,
+					"subscriber", result.ID,
 					"error", err,
 				)
 
 				return status.Error(codes.Internal, err.Error())
 			}
-		case <-done:
+		case <-result.Done:
 			return nil
 		case <-ctx.Done():
 			return ctx.Err()
