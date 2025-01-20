@@ -1,3 +1,8 @@
+// broker.proto is the API definition for the broker service.
+//
+// This file contains the definitions for the broker service, including the
+// service definition, request and response messages, and the message structure.
+
 syntax = "proto3";
 
 package broker.v1;
@@ -6,8 +11,9 @@ import "google/api/annotations.proto";
 
 option go_package = "github.com/8thgencore/message-broker/pkg/pb/broker/v1;brokerv1";
 
+// BrokerService defines the service for the broker.
 service BrokerService {
-  // PublishMessage публикует сообщение в указанную очередь
+  // PublishMessage publishes a message to the given queue.
   rpc PublishMessage(PublishMessageRequest) returns (PublishMessageResponse) {
     option (google.api.http) = {
       post: "/v1/queues/{queue_name}/messages"
@@ -15,7 +21,7 @@ service BrokerService {
     };
   }
 
-  // Subscribe создает подписку на указанную очередь
+  // Subscribe creates a subscription to the given queue.
   rpc Subscribe(SubscribeRequest) returns (stream Message) {
     option (google.api.http) = {
       post: "/v1/queues/{queue_name}/subscriptions"
@@ -23,19 +29,23 @@ service BrokerService {
   }
 }
 
+// PublishMessageRequest is the request for publishing a message to a queue.
 message PublishMessageRequest {
   string queue_name = 1;
   Message message = 2;
 }
 
+// PublishMessageResponse is the response for publishing a message to a queue.
 message PublishMessageResponse {
   string message_id = 1;
 }
 
+// SubscribeRequest is the request for creating a subscription to a queue.
 message SubscribeRequest {
   string queue_name = 1;
 }
 
+// Message is the message structure.
 message Message {
   string id = 1;
   bytes data = 2;

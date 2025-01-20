@@ -18,7 +18,7 @@
   "paths": {
     "/v1/queues/{queueName}/messages": {
       "post": {
-        "summary": "PublishMessage публикует сообщение в указанную очередь",
+        "summary": "PublishMessage publishes a message to the given queue.",
         "operationId": "BrokerService_PublishMessage",
         "responses": {
           "200": {
@@ -57,7 +57,7 @@
     },
     "/v1/queues/{queueName}/subscriptions": {
       "post": {
-        "summary": "Subscribe создает подписку на указанную очередь",
+        "summary": "Subscribe creates a subscription to the given queue.",
         "operationId": "BrokerService_Subscribe",
         "responses": {
           "200": {
@@ -135,7 +135,8 @@
           "type": "string",
           "format": "byte"
         }
-      }
+      },
+      "description": "Message is the message structure."
     },
     "v1PublishMessageResponse": {
       "type": "object",
@@ -143,7 +144,8 @@
         "messageId": {
           "type": "string"
         }
-      }
+      },
+      "description": "PublishMessageResponse is the response for publishing a message to a queue."
     }
   }
 }
