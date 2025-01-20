@@ -1,0 +1,10 @@
+version: '3'
+
+includes:
+  common: ./taskfiles/common.yml
+  deps: ./taskfiles/deps.yml
+  dev: ./taskfiles/dev.yml
+  generate: ./taskfiles/generate.yml
+
+vars:
+  LOCAL_BIN: '{{.PWD}}/bin'
