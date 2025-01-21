@@ -3,8 +3,12 @@ version: '3'
 includes:
   common: ./taskfiles/common.yml
   deps: ./taskfiles/deps.yml
-  dev: ./taskfiles/dev.yml
   generate: ./taskfiles/generate.yml
+  dev: 
+    taskfile: ./taskfiles/dev.yml
+    flatten: true
+
+dotenv: ['.env.local']
 
 vars:
   LOCAL_BIN: '{{.PWD}}/bin'
