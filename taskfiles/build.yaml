@@ -1,0 +1,7 @@
+version: '3'
+
+tasks:
+  app:
+    desc: Build the broker application
+    cmds:
+      - go build -o ./bin/broker cmd/broker/main.go

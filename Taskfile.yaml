@@ -1,0 +1,21 @@
+version: '3'
+
+includes:
+  common: ./taskfiles/common.yaml
+  deps: ./taskfiles/deps.yaml
+  build: ./taskfiles/build.yaml
+  dev: 
+    taskfile: ./taskfiles/dev.yaml
+    flatten: true
+  generate: ./taskfiles/generate.yaml
+
+tasks:
+  default:
+    desc: Show task list
+    cmds:
+      - task --list
+
+dotenv: ['.env.local']
+
+vars:
+  LOCAL_BIN: '{{.PWD}}/bin'
